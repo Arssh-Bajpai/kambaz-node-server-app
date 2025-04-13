@@ -2,8 +2,9 @@ import * as dao from "./dao.js";
 import * as courseDao from "../Courses/dao.js";
 import * as enrollmentsDao from "../Enrollments/dao.js";
 
-let currentUser = null;
+
 export default function UserRoutes(app) {
+
   const createCourse = (req, res) => {
     const currentUser = req.session["currentUser"];
     const newCourse = courseDao.createCourse(req.body);
@@ -11,11 +12,13 @@ export default function UserRoutes(app) {
     res.json(newCourse);
   };
   app.post("/api/users/current/courses", createCourse);
-    
+
+  
   const createUser = (req, res) => { };
   const deleteUser = (req, res) => { };
   const findAllUsers = (req, res) => { };
   const findUserById = (req, res) => { };
+
   const updateUser = (req, res) => {
     const userId = req.params.userId;
     const userUpdates = req.body;
@@ -24,6 +27,7 @@ export default function UserRoutes(app) {
     req.session["currentUser"] = currentUser;
     res.json(currentUser);
   };
+
 
 
   const signup = (req, res) => {
@@ -49,22 +53,26 @@ export default function UserRoutes(app) {
     }
   };
 
+
   
+ 
   const signout = (req, res) => {
-    // currentUser = null;
     req.session.destroy();
     res.sendStatus(200);
   };
 
+
+
   const profile = (req, res) => {
     const currentUser = req.session["currentUser"];
-    console.log("Node server: ", currentUser);
     if (!currentUser) {
       res.sendStatus(401);
       return;
     }
     res.json(currentUser);
   };
+
+
   const findCoursesForEnrolledUser = (req, res) => {
     let { userId } = req.params;
     if (userId === "current") {
