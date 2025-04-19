@@ -1,24 +1,42 @@
-import Database from "../Database/index.js";
+import { v4 as uuidv4 } from "uuid";
+import model from "./model.js";
 
-export function findAssignmentsForCourse(courseId) {
-    const { assignments } = Database;
-    return assignments.filter((assignment) => assignment.course === courseId);
+// Get all assignments
+export function findAllAssignments() {
+  return model.find();
 }
 
-export function createAssignment(assignment) {
-    const newAssignment = { ...assignment, _id: Date.now().toString() };
-    Database.assignments = [...Database.assignments, newAssignment];
-    return newAssignment;
+// Get assignments for a specific course
+export function findAssignmentsForCourses(courseId) {
+  return model.find({ course: courseId });
 }
 
-export function deleteAssignment(assignmentId) {
-    const { assignments } = Database;
-    Database.assignments = assignments.filter((assignment) => assignment._id !== assignmentId);
+// Get a specific assignment by ID
+export function findAssignmentByIds(assignmentId) {
+  return model.findOne({ _id: assignmentId });
 }
 
-export function updateAssignment(assignmentId, assignmentUpdates) {
-    const { assignments } = Database;
-    const assignment = assignments.find((a) => a._id === assignmentId);
-    Object.assign(assignment, assignmentUpdates);
-    return assignment;
+// Create a new assignment
+export function createAssignments(assignment) {
+  return model.create({ ...assignment, _id: uuidv4() });
+}
+
+// Update an assignment
+export async function updateAssignments(assignmentId, updates) {
+  if (!assignmentId) {
+    throw new Error("Assignment ID is required for update");
+  }
+
+  const result = await model.updateOne({ _id: assignmentId }, { $set: updates });
+
+  if (result.matchedCount === 0) {
+    throw new Error(`Assignment with ID ${assignmentId} not found`);
+  }
+
+  return model.findOne({ _id: assignmentId });
+}
+
+// Delete an assignment
+export function deleteAssignments(assignmentId) {
+  return model.deleteOne({ _id: assignmentId });
 }
